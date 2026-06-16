@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRADANET — 6-Month War Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #070709;
+  --bg2:      #0d0d10;
+  --bg3:      #131318;
+  --bg4:      #1a1a22;
+  --border:   rgba(245,166,35,0.12);
+  --border2:  rgba(245,166,35,0.25);
+  --amber:    #F5A623;
+  --amber2:   #d4891a;
+  --amber-dim:rgba(245,166,35,0.08);
+  --red:      #E8402A;
+  --red-dim:  rgba(232,64,42,0.1);
+  --green:    #27C87A;
+  --green-dim:rgba(39,200,122,0.1);
+  --slate:    #3A3D4A;
+  --text:     #F0F0F2;
+  --muted:    #6B6E7E;
+  --dim:      #3A3C48;
+  --display:  'Space Grotesk', sans-serif;
+  --mono:     'IBM Plex Mono', monospace;
+  --body:     'Inter', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+
+/* GRID OVERLAY */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(245,166,35,0.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(245,166,35,0.018) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0;
+}
+
+/* TICKER */
+.ticker-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(7,7,9,0.96);
+  border-bottom:1px solid var(--border);
+  height:32px;overflow:hidden;
+}
+.ticker-inner{
+  display:flex;align-items:center;height:32px;
+  animation:ticker 30s linear infinite;
+  white-space:nowrap;width:max-content;
+}
+.tick-item{
+  font-family:var(--mono);font-size:10px;
+  padding:0 28px;letter-spacing:.06em;
+  display:flex;align-items:center;gap:8px;
+}
+.tick-pair{color:var(--muted)}
+.tick-up{color:var(--green)}
+.tick-dn{color:var(--red)}
+.tick-sep{color:var(--dim)}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* NAV */
+nav{
+  position:sticky;top:32px;z-index:100;
+  background:rgba(7,7,9,0.94);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 60px;
+}
+.nav-inner{
+  max-width:1280px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{
+  font-family:var(--mono);font-size:13px;font-weight:700;
+  color:var(--amber);letter-spacing:.1em;
+  padding:14px 0;display:flex;align-items:center;gap:10px;
+}
+.nav-logo::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:var(--amber);
+  box-shadow:0 0 8px var(--amber);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.nav-links{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-btn{
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);
+  background:none;border:none;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  padding:14px 16px;cursor:pointer;transition:all .15s;
+  white-space:nowrap;text-decoration:none;display:block;
+}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--amber);border-bottom-color:var(--amber)}
+
+/* MAIN */
+main{position:relative;z-index:1;padding-top:32px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 60px}
+
+/* SECTION UTILITIES */
+section{padding:80px 0}
+.s-tag{
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--amber);
+  margin-bottom:14px;display:flex;align-items:center;gap:12px;
+}
+.s-tag::before{content:'';display:block;width:20px;height:1px;background:var(--amber)}
+.s-title{
+  font-family:var(--display);font-size:clamp(32px,4.5vw,58px);
+  font-weight:700;line-height:1.05;letter-spacing:-.02em;margin-bottom:18px;
+}
+.s-title .amber{color:var(--amber)}
+.s-title .red{color:var(--red)}
+.s-title .green{color:var(--green)}
+.s-body{font-size:14px;color:var(--muted);line-height:1.85;max-width:640px;margin-bottom:40px}
+
+/* ═══════════════ HERO ═══════════════ */
+.hero{
+  min-height:calc(100vh - 64px);
+  display:grid;grid-template-columns:1fr 480px;
+  gap:60px;align-items:center;
+  padding:80px 60px;max-width:1280px;margin:0 auto;
+}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--amber);
+  margin-bottom:24px;display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before{
+  content:'MISSION ACTIVE';font-size:9px;
+  background:var(--red);color:#fff;
+  padding:3px 8px;border-radius:3px;letter-spacing:.06em;
+  animation:blink 2s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-title{
+  font-family:var(--display);
+  font-size:clamp(40px,5.5vw,72px);
+  font-weight:700;line-height:1.0;letter-spacing:-.03em;
+  margin-bottom:24px;
+}
+.hero-title .line2{color:var(--amber)}
+.hero-title .line3{
+  font-weight:300;font-size:.65em;
+  color:var(--muted);display:block;margin-top:6px;
+}
+.hero-desc{
+  font-size:15px;color:rgba(240,240,242,0.55);
+  line-height:1.85;max-width:500px;margin-bottom:36px;
+}
+.hero-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;
+}
+.hs-card{
+  background:var(--bg2);padding:18px 16px;
+}
+.hs-num{
+  font-family:var(--mono);font-size:22px;font-weight:700;
+  color:var(--amber);line-height:1;margin-bottom:5px;
+}
+.hs-label{font-size:11px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em}
+
+/* MISSION CLOCK */
+.mission-clock{display:flex;flex-direction:column;align-items:center;gap:24px}
+.clock-ring{position:relative;width:340px;height:340px}
+.clock-ring svg{width:100%;height:100%}
+.clock-centre{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+.cc-label{
+  font-family:var(--mono);font-size:10px;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px;
+}
+.cc-main{
+  font-family:var(--display);font-size:28px;font-weight:700;
+  color:var(--amber);line-height:1;
+}
+.cc-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px}
+.clock-legend{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.cl-item{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.cl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ═══════════════ TIMELINE ═══════════════ */
+.timeline-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.timeline-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.tl-phase{background:var(--bg2);padding:36px 32px;position:relative;overflow:hidden}
+.tl-phase::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.tl-phase.igcse::before{background:linear-gradient(90deg,var(--amber),transparent)}
+.tl-phase.projects::before{background:linear-gradient(90deg,var(--green),transparent)}
+.tl-phase.live::before{background:linear-gradient(90deg,var(--red),transparent)}
+.tl-num{
+  font-family:var(--mono);font-size:48px;font-weight:700;
+  line-height:1;margin-bottom:12px;opacity:.15;
+  position:absolute;top:20px;right:24px;
+}
+.tl-tag{
+  font-family:var(--mono);font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.tl-tag.amber{color:var(--amber)}
+.tl-tag.green{color:var(--green)}
+.tl-tag.red{color:var(--red)}
+.tl-title{font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:6px}
+.tl-dates{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px}
+.tl-body{font-size:13px;color:rgba(240,240,242,0.5);line-height:1.7;margin-bottom:16px}
+.tl-list{display:flex;flex-direction:column;gap:6px}
+.tl-item{
+  font-family:var(--mono);font-size:11px;color:var(--muted);
+  display:flex;gap:8px;align-items:flex-start;
+}
+.tl-item::before{content:'→';flex-shrink:0}
+.tl-item.amber::before{color:var(--amber)}
+.tl-item.green::before{color:var(--green)}
+.tl-item.red::before{color:var(--red)}
+
+/* ═══════════════ IGCSE WAR ROOM ═══════════════ */
+.igcse-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px}
+.subj-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:20px 16px;
+  transition:border-color .2s,transform .2s;
+}
+.subj-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.subj-code{
+  font-family:var(--mono);font-size:10px;color:var(--amber);
+  margin-bottom:8px;letter-spacing:.06em;
+}
+.subj-name{font-size:13px;font-weight:600;margin-bottom:6px}
+.subj-weeks{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px}
+.subj-bar{height:3px;background:var(--dim);border-radius:100px;overflow:hidden}
+.subj-fill{height:100%;background:var(--amber);border-radius:100px}
+
+.daily-routine{
+  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;margin-bottom:32px;
+}
+.dr-header{
+  padding:14px 20px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);border-bottom:1px solid var(--border);
+  background:var(--amber-dim);
+}
+.dr-row{
+  display:grid;grid-template-columns:100px 1fr 140px;
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  font-size:12px;align-items:center;gap:20px;
+  transition:background .15s;
+}
+.dr-row:last-child{border-bottom:none}
+.dr-row:hover{background:var(--amber-dim)}
+.dr-time{font-family:var(--mono);font-size:11px;color:var(--amber)}
+.dr-task{color:rgba(240,240,242,0.7);line-height:1.5}
+.dr-type{
+  font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+  text-align:right;
+}
+.dr-type.igcse{color:var(--amber)}
+.dr-type.project{color:var(--green)}
+.dr-type.rest{color:var(--muted)}
+
+/* ═══════════════ PROJECTS ═══════════════ */
+.projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.proj-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:24px;
+  transition:border-color .2s,transform .2s;position:relative;
+  overflow:hidden;
+}
+.proj-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.proj-card::after{
+  content:'';position:absolute;
+  bottom:-30px;right:-30px;width:120px;height:120px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(245,166,35,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.proj-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.proj-num{
+  font-family:var(--mono);font-size:10px;padding:4px 10px;
+  border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:2px;
+  background:var(--amber-dim);color:var(--amber);border:1px solid var(--border2);
+}
+.proj-title{font-family:var(--display);font-size:16px;font-weight:600;line-height:1.2}
+.proj-week{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px}
+.proj-desc{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:12px}
+.proj-tags{display:flex;flex-wrap:wrap;gap:5px}
+.proj-tag{
+  font-family:var(--mono);font-size:9px;padding:3px 8px;
+  border-radius:3px;background:var(--bg4);
+  border:1px solid var(--dim);color:var(--muted);
+}
+.proj-igcse{
+  font-family:var(--mono);font-size:10px;color:var(--amber);
+  margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
+  line-height:1.5;
+}
+
+/* ═══════════════ MVP ═══════════════ */
+.mvp-hero{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:12px;padding:48px;margin-bottom:28px;
+  position:relative;overflow:hidden;
+}
+.mvp-hero::before{
+  content:'';position:absolute;
+  top:-80px;right:-80px;width:360px;height:360px;border-radius:50%;
+  background:radial-gradient(circle,rgba(39,200,122,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.mvp-title{
+  font-family:var(--display);font-size:clamp(26px,3.5vw,44px);
+  font-weight:700;line-height:1.1;margin-bottom:16px;letter-spacing:-.02em;
+}
+.mvp-title .green{color:var(--green)}
+.mvp-body{font-size:14px;color:var(--muted);line-height:1.85;max-width:700px;margin-bottom:32px}
+
+/* TERMINAL */
+.terminal{
+  background:#000;border:1px solid rgba(39,200,122,0.2);
+  border-radius:8px;overflow:hidden;margin-bottom:28px;
+}
+.terminal-bar{
+  background:#111;padding:10px 16px;
+  display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(39,200,122,0.1);
+}
+.tb-dot{width:10px;height:10px;border-radius:50%}
+.terminal-body{padding:24px;font-family:var(--mono);font-size:12px;line-height:1.9}
+.t-comment{color:#3A4A3A}
+.t-prompt{color:rgba(39,200,122,0.5)}
+.t-cmd{color:var(--green)}
+.t-out{color:#8A9E8A}
+.t-num{color:var(--amber)}
+.t-str{color:#7EBCF0}
+.t-err{color:var(--red)}
+.t-warn{color:var(--amber)}
+
+/* MVP STACK */
+.mvp-stack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.stack-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:22px 20px;transition:border-color .2s;
+}
+.stack-card:hover{border-color:var(--green);border-color:rgba(39,200,122,0.3)}
+.stack-layer{
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--green);margin-bottom:8px;
+}
+.stack-name{font-size:14px;font-weight:600;margin-bottom:8px}
+.stack-body{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:10px}
+.stack-tech{
+  font-family:var(--mono);font-size:10px;color:var(--dim);
+  background:var(--bg4);border:1px solid var(--dim);
+  border-radius:4px;padding:4px 8px;display:inline-block;
+}
+
+/* P&L TABLE */
+.pnl-section{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;margin-bottom:28px;
+}
+.pnl-header{
+  display:grid;grid-template-columns:180px 1fr 120px 120px 160px;
+  padding:12px 20px;
+  background:var(--bg4);border-bottom:1px solid var(--border);
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);gap:12px;
+}
+.pnl-row{
+  display:grid;grid-template-columns:180px 1fr 120px 120px 160px;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  font-size:12px;gap:12px;align-items:start;
+  transition:background .15s;
+}
+.pnl-row:last-child{border-bottom:none}
+.pnl-row:hover{background:var(--amber-dim)}
+.pnl-mvp{font-family:var(--mono);font-size:11px;color:var(--amber)}
+.pnl-desc{font-size:12px;color:rgba(240,240,242,0.6);line-height:1.5}
+.pnl-capital{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.pnl-monthly{font-family:var(--mono);font-size:12px;color:var(--green);font-weight:500}
+.pnl-risk{
+  font-family:var(--mono);font-size:10px;
+  padding:3px 8px;border-radius:4px;display:inline-block;
+}
+.risk-low{background:rgba(39,200,122,0.1);color:var(--green)}
+.risk-med{background:rgba(245,166,35,0.1);color:var(--amber)}
+.risk-hi{background:var(--red-dim);color:var(--red)}
+
+.pnl-total{
+  background:var(--bg4);padding:16px 20px;
+  display:grid;grid-template-columns:180px 1fr 120px 120px 160px;
+  gap:12px;border-top:1px solid var(--border2);
+}
+.pnl-total-label{
+  font-family:var(--mono);font-size:11px;
+  color:var(--amber);letter-spacing:.06em;text-transform:uppercase;
+}
+.pnl-total-monthly{
+  font-family:var(--mono);font-size:16px;font-weight:700;
+  color:var(--green);
+  grid-column:4;
+}
+
+/* DISCLAIMER */
+.disclaimer{
+  background:var(--red-dim);border:1px solid rgba(232,64,42,0.2);
+  border-radius:8px;padding:16px 20px;
+  font-family:var(--mono);font-size:11px;color:rgba(232,64,42,0.8);
+  line-height:1.7;
+}
+.disclaimer::before{content:'⚠ RISK DISCLOSURE  //  ';color:var(--red);font-weight:700}
+
+/* EARNINGS PROJECTIONS */
+.earnings-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.earn-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:24px 20px;text-align:center;
+  transition:border-color .2s;
+}
+.earn-card:hover{border-color:var(--border2)}
+.earn-scenario{
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:12px;
+}
+.earn-month{
+  font-family:var(--mono);font-size:28px;font-weight:700;
+  line-height:1;margin-bottom:6px;
+}
+.earn-annual{font-family:var(--mono);font-size:13px;margin-bottom:10px}
+.earn-prob{font-size:11px;color:var(--muted);line-height:1.5}
+.earn-card.bear .earn-scenario{color:var(--red)}
+.earn-card.bear .earn-month{color:var(--red)}
+.earn-card.bear .earn-annual{color:rgba(232,64,42,0.6)}
+.earn-card.base .earn-scenario{color:var(--amber)}
+.earn-card.base .earn-month{color:var(--amber)}
+.earn-card.base .earn-annual{color:rgba(245,166,35,0.6)}
+.earn-card.bull .earn-scenario{color:var(--green)}
+.earn-card.bull .earn-month{color:var(--green)}
+.earn-card.bull .earn-annual{color:rgba(39,200,122,0.6)}
+.earn-card.stretch .earn-scenario{color:#7EB8F0}
+.earn-card.stretch .earn-month{color:#7EB8F0}
+.earn-card.stretch .earn-annual{color:rgba(126,184,240,0.6)}
+
+/* GROWTH TABLE */
+.growth-table{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;margin-bottom:28px;
+}
+.gt-header{
+  display:grid;
+  grid-template-columns:80px 1fr 110px 110px 110px 130px;
+  padding:12px 20px;background:var(--bg4);
+  border-bottom:1px solid var(--border);
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);gap:10px;
+}
+.gt-row{
+  display:grid;
+  grid-template-columns:80px 1fr 110px 110px 110px 130px;
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  font-size:12px;gap:10px;align-items:center;
+  transition:background .15s;
+}
+.gt-row:last-child{border-bottom:none}
+.gt-row:hover{background:var(--amber-dim)}
+.gt-month{font-family:var(--mono);font-size:11px;color:var(--amber)}
+.gt-phase{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.gt-capital{font-family:var(--mono);font-size:11px;color:var(--text)}
+.gt-pnl{font-family:var(--mono);font-size:12px;font-weight:500}
+.gt-pnl.pos{color:var(--green)}
+.gt-pnl.neg{color:var(--red)}
+.gt-pnl.zero{color:var(--muted)}
+.gt-cum{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.gt-note{font-size:11px;color:var(--muted);line-height:1.4}
+
+/* RISK RULES */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+.rule-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:20px 22px;transition:border-color .2s;
+}
+.rule-card:hover{border-color:rgba(39,200,122,0.3)}
+.rule-num{font-family:var(--mono);font-size:10px;color:var(--green);margin-bottom:8px}
+.rule-title{font-size:14px;font-weight:600;margin-bottom:8px}
+.rule-body{font-size:12px;color:var(--muted);line-height:1.7}
+.rule-formula{
+  font-family:var(--mono);font-size:11px;color:var(--amber);
+  background:var(--amber-dim);border:1px solid var(--border);
+  border-radius:4px;padding:6px 12px;margin-top:10px;
+  line-height:1.6;
+}
+
+/* CLOSING */
+.closing{
+  background:var(--amber);color:#000;
+  border-radius:12px;padding:56px 52px;margin-bottom:0;
+  position:relative;overflow:hidden;
+}
+.closing::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.025) 3px,rgba(0,0,0,0.025) 6px);
+  pointer-events:none;
+}
+.closing-title{
+  font-family:var(--display);font-size:clamp(28px,4vw,52px);
+  font-weight:700;line-height:1.05;letter-spacing:-.02em;
+  margin-bottom:18px;color:#000;position:relative;z-index:1;
+}
+.closing-body{
+  font-size:15px;color:rgba(0,0,0,0.65);
+  line-height:1.85;max-width:660px;margin-bottom:28px;
+  position:relative;z-index:1;
+}
+.closing-link{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  padding:12px 22px;border-radius:6px;text-decoration:none;
+  background:rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.2);
+  color:#000;transition:all .2s;position:relative;z-index:1;
+}
+.closing-link:hover{background:rgba(0,0,0,0.2)}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--border);
+  padding:28px 60px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:14px;max-width:none;
+}
+.footer-l{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em}
+.footer-r{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.04em}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .hero{grid-template-columns:1fr;gap:48px;padding:60px 40px}
+  .clock-ring{width:280px;height:280px}
+  nav,.wrap,footer{padding-left:32px;padding-right:32px}
+  .igcse-grid{grid-template-columns:repeat(3,1fr)}
+  .projects-grid{grid-template-columns:1fr}
+  .mvp-stack-grid{grid-template-columns:1fr 1fr}
+  .earnings-grid{grid-template-columns:1fr 1fr}
+  .pnl-header,.pnl-row,.pnl-total{grid-template-columns:1fr 1fr;font-size:11px}
+  .gt-header,.gt-row{grid-template-columns:60px 1fr 90px 90px}
+}
+@media(max-width:640px){
+  .hero{padding:40px 20px}
+  nav,.wrap,footer{padding-left:20px;padding-right:20px}
+  .timeline-grid{grid-template-columns:1fr}
+  .igcse-grid{grid-template-columns:1fr 1fr}
+  .earnings-grid{grid-template-columns:1fr 1fr}
+  .rules-grid{grid-template-columns:1fr}
+  .mvp-stack-grid{grid-template-columns:1fr}
+  .hero-stats{grid-template-columns:1fr 1fr 1fr}
+  .pnl-header,.pnl-row,.pnl-total{grid-template-columns:1fr;gap:4px}
+  .gt-header,.gt-row{grid-template-columns:50px 1fr 80px}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <div class="tick-item"><span class="tick-pair">EUR/USD</span><span class="tick-up">1.0842 ▲0.0018</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">GBP/USD</span><span class="tick-dn">1.2651 ▼0.0023</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">USD/JPY</span><span class="tick-up">157.34 ▲0.42</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">USD/CHF</span><span class="tick-dn">0.8891 ▼0.0011</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">AUD/USD</span><span class="tick-up">0.6487 ▲0.0009</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">USD/CAD</span><span class="tick-up">1.3612 ▲0.0031</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">EUR/GBP</span><span class="tick-dn">0.8573 ▼0.0014</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">NZD/USD</span><span class="tick-up">0.6021 ▲0.0007</span></div><span class="tick-sep">|</span>
+    <!-- duplicate for seamless loop -->
+    <div class="tick-item"><span class="tick-pair">EUR/USD</span><span class="tick-up">1.0842 ▲0.0018</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">GBP/USD</span><span class="tick-dn">1.2651 ▼0.0023</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">USD/JPY</span><span class="tick-up">157.34 ▲0.42</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">USD/CHF</span><span class="tick-dn">0.8891 ▼0.0011</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">AUD/USD</span><span class="tick-up">0.6487 ▲0.0009</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">USD/CAD</span><span class="tick-up">1.3612 ▲0.0031</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">EUR/GBP</span><span class="tick-dn">0.8573 ▼0.0014</span></div><span class="tick-sep">|</span>
+    <div class="tick-item"><span class="tick-pair">NZD/USD</span><span class="tick-up">0.6021 ▲0.0007</span></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">TRADANET // WAR ROOM</div>
+    <div class="nav-links">
+      <a href="#mission" class="nav-btn active">Mission</a>
+      <a href="#timeline" class="nav-btn">Timeline</a>
+      <a href="#igcse" class="nav-btn">IGCSE Plan</a>
+      <a href="#projects" class="nav-btn">Projects</a>
+      <a href="#mvp" class="nav-btn">MVP</a>
+      <a href="#earnings" class="nav-btn">Earnings</a>
+      <a href="#rules" class="nav-btn">Risk Rules</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<div class="hero" id="mission">
+  <div>
+    <div class="hero-eyebrow">TRADANET · SIX MONTH WAR ROOM · INITIATED JUN 2026</div>
+    <div class="hero-title">
+      From student<br>
+      <span class="line2">to live trader.</span>
+      <span class="line3">6 months. 5 subjects. 5 projects. 1 MVP earning real money.</span>
+    </div>
+    <p class="hero-desc">Three months to pass IGCSE with A grades while building trading projects simultaneously. Three months full-time to complete the Year 1 ladder and deploy a Minimum Viable Portfolio that generates real income. This is the most compressed, highest-leverage path from here to live algorithmic trading.</p>
+    <div class="hero-stats">
+      <div class="hs-card">
+        <div class="hs-num">6</div>
+        <div class="hs-label">Total months</div>
+      </div>
+      <div class="hs-card">
+        <div class="hs-num">5</div>
+        <div class="hs-label">IGCSE subjects</div>
+      </div>
+      <div class="hs-card">
+        <div class="hs-num">5</div>
+        <div class="hs-label">Ladder projects</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSION CLOCK -->
+  <div class="mission-clock">
+    <div class="clock-ring">
+      <svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background circles -->
+        <circle cx="170" cy="170" r="155" fill="none" stroke="rgba(245,166,35,0.06)" stroke-width="1"/>
+        <circle cx="170" cy="170" r="130" fill="none" stroke="rgba(245,166,35,0.04)" stroke-width="1"/>
+
+        <!-- Track -->
+        <circle cx="170" cy="170" r="148" fill="none" stroke="rgba(58,61,74,0.6)" stroke-width="14" stroke-linecap="round"
+          transform="rotate(-90 170 170)"/>
+
+        <!-- Phase 1: IGCSE — 3 months = 50% of arc (180 deg) — amber -->
+        <circle cx="170" cy="170" r="148" fill="none" stroke="#F5A623" stroke-width="14"
+          stroke-dasharray="464 929" stroke-dashoffset="0" stroke-linecap="butt"
+          transform="rotate(-90 170 170)" opacity="0.9"/>
+
+        <!-- Phase 2: Projects — 2 months = 33% of arc  — green -->
+        <circle cx="170" cy="170" r="148" fill="none" stroke="#27C87A" stroke-width="14"
+          stroke-dasharray="309 929" stroke-dashoffset="-464" stroke-linecap="butt"
+          transform="rotate(-90 170 170)" opacity="0.9"/>
+
+        <!-- Phase 3: Live — 1 month = 17% of arc — red -->
+        <circle cx="170" cy="170" r="148" fill="none" stroke="#E8402A" stroke-width="14"
+          stroke-dasharray="156 929" stroke-dashoffset="-773" stroke-linecap="butt"
+          transform="rotate(-90 170 170)" opacity="0.9"/>
+
+        <!-- Sweep line animation -->
+        <line x1="170" y1="170" x2="170" y2="26"
+          stroke="rgba(245,166,35,0.6)" stroke-width="1.5"
+          transform-origin="170 170">
+          <animateTransform attributeName="transform" type="rotate"
+            from="0 170 170" to="360 170 170" dur="12s" repeatCount="indefinite"/>
+        </line>
+
+        <!-- Phase labels -->
+        <text x="170" y="46" text-anchor="middle" fill="#F5A623" font-family="IBM Plex Mono" font-size="9" letter-spacing="2">IGCSE</text>
+        <text x="296" y="240" text-anchor="middle" fill="#27C87A" font-family="IBM Plex Mono" font-size="9" letter-spacing="2">BUILD</text>
+        <text x="68" y="290" text-anchor="middle" fill="#E8402A" font-family="IBM Plex Mono" font-size="9" letter-spacing="2">LIVE</text>
+
+        <!-- Tick marks -->
+        <g stroke="rgba(245,166,35,0.2)" stroke-width="1">
+          <line x1="170" y1="14" x2="170" y2="26" transform="rotate(0 170 170)"/>
+          <line x1="170" y1="14" x2="170" y2="26" transform="rotate(60 170 170)"/>
+          <line x1="170" y1="14" x2="170" y2="26" transform="rotate(120 170 170)"/>
+          <line x1="170" y1="14" x2="170" y2="26" transform="rotate(180 170 170)"/>
+          <line x1="170" y1="14" x2="170" y2="26" transform="rotate(240 170 170)"/>
+          <line x1="170" y1="14" x2="170" y2="26" transform="rotate(300 170 170)"/>
+        </g>
+      </svg>
+      <div class="clock-centre">
+        <div class="cc-label">war room</div>
+        <div class="cc-main">6 MO</div>
+        <div class="cc-sub">Jun 2026 → Dec 2026</div>
+      </div>
+    </div>
+    <div class="clock-legend">
+      <div class="cl-item"><div class="cl-dot" style="background:#F5A623"></div>3mo IGCSE</div>
+      <div class="cl-item"><div class="cl-dot" style="background:#27C87A"></div>2mo Build</div>
+      <div class="cl-item"><div class="cl-dot" style="background:#E8402A"></div>1mo Live</div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" id="timeline">
+  <div class="wrap"><div style="padding:64px 0">
+    <div class="s-tag">Mission Timeline</div>
+    <div class="s-title">Three phases.<br>One <span class="amber">outcome.</span></div>
+  </div></div>
+  <div style="max-width:1280px;margin:0 auto;padding:0 60px 64px">
+    <div class="timeline-grid">
+      <div class="tl-phase igcse">
+        <div class="tl-num">01</div>
+        <div class="tl-tag amber">// Phase 1</div>
+        <div class="tl-title">IGCSE + Projects</div>
+        <div class="tl-dates">Jun 2026 → Sep 2026 · 3 months</div>
+        <p class="tl-body">Five subjects studied at student-engineer level — not to pass exams, but to build the mathematical foundation that the trading models require. Projects P01 and P02 built simultaneously with study.</p>
+        <div class="tl-list">
+          <div class="tl-item amber">Maths 0580 — statistics, algebra, sequences, probability</div>
+          <div class="tl-item amber">Add. Maths 0606 — calculus, matrices, vectors, logarithms</div>
+          <div class="tl-item amber">Physics 0625 — waves, forces, motion (market analogies)</div>
+          <div class="tl-item amber">Computer Science 0478 — algorithms, data structures, pseudocode</div>
+          <div class="tl-item amber">English Language 0500 — report writing, analysis, directed writing</div>
+          <div class="tl-item amber">P01: Forex Price Visualizer (Weeks 1–2)</div>
+          <div class="tl-item amber">P02: Moving Average Calculator (Weeks 3–4)</div>
+        </div>
+      </div>
+      <div class="tl-phase projects">
+        <div class="tl-num">02</div>
+        <div class="tl-tag green">// Phase 2</div>
+        <div class="tl-title">Full-Time Build</div>
+        <div class="tl-dates">Sep 2026 → Nov 2026 · 2 months</div>
+        <p class="tl-body">IGCSE exams complete. Full 8-hour days on the ladder projects. P03 through P05 completed. By end of month 5, the MVP is architecturally ready — the trading system is built, backtested, and paper-tested.</p>
+        <div class="tl-list">
+          <div class="tl-item green">P03: Currency Correlation Heatmap (Weeks 13–15)</div>
+          <div class="tl-item green">P04: Trading Journal App (Weeks 15–17)</div>
+          <div class="tl-item green">P05: News Sentiment Scraper (Weeks 17–20)</div>
+          <div class="tl-item green">MVP integration — combine P01–P05 into one system</div>
+          <div class="tl-item green">Paper trading with $0 capital — 4 weeks minimum</div>
+          <div class="tl-item green">Dad code review — every component before live deploy</div>
+        </div>
+      </div>
+      <div class="tl-phase live">
+        <div class="tl-num">03</div>
+        <div class="tl-tag red">// Phase 3</div>
+        <div class="tl-title">Go Live</div>
+        <div class="tl-dates">Nov 2026 → Dec 2026 · 1 month</div>
+        <p class="tl-body">Deploy MVP with real capital — starting at $500 minimum, scaling to $1,000–$2,000 if paper trading results justify it. Risk management rules enforced by code, not willpower. Every trade logged automatically.</p>
+        <div class="tl-list">
+          <div class="tl-item red">Open OANDA or IC Markets live account</div>
+          <div class="tl-item red">Deploy with $500–$1,000 starting capital</div>
+          <div class="tl-item red">Max 1% risk per trade — enforced in code</div>
+          <div class="tl-item red">Max 5% portfolio drawdown → system pauses</div>
+          <div class="tl-item red">Weekly P&L review with Dad as risk officer</div>
+          <div class="tl-item red">Month-end: scale up or refine based on data</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IGCSE PLAN -->
+<section id="igcse">
+<div class="wrap">
+  <div class="s-tag">IGCSE War Room · 3 Months</div>
+  <div class="s-title">Five subjects.<br><span class="amber">Engineer's mindset.</span></div>
+  <p class="s-body">These are not studied as school subjects. Each one is studied for the specific mathematical tool it provides for the trading projects. The exam is the proof of mastery. The project is the application.</p>
+
+  <div class="igcse-grid">
+    <div class="subj-card">
+      <div class="subj-code">0580</div>
+      <div class="subj-name">Mathematics</div>
+      <div class="subj-weeks">Weeks 1–8 · daily</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:100%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Probability, statistics, sequences. Every topic applied directly to price data.</p>
+    </div>
+    <div class="subj-card">
+      <div class="subj-code">0606</div>
+      <div class="subj-name">Add. Mathematics</div>
+      <div class="subj-weeks">Weeks 3–12 · daily</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:90%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Calculus, matrices, vectors, logarithms. The direct mathematical language of ML models.</p>
+    </div>
+    <div class="subj-card">
+      <div class="subj-code">0625</div>
+      <div class="subj-name">Physics</div>
+      <div class="subj-weeks">Weeks 1–10 · 3×/week</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:75%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Waves = price oscillations. Forces = market pressure. Energy = equity curve.</p>
+    </div>
+    <div class="subj-card">
+      <div class="subj-code">0478</div>
+      <div class="subj-name">Computer Science</div>
+      <div class="subj-weeks">Weeks 1–12 · daily</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:100%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Pseudocode, algorithms, data structures. Every project reinforces every CS topic.</p>
+    </div>
+    <div class="subj-card">
+      <div class="subj-code">0500</div>
+      <div class="subj-name">English Language</div>
+      <div class="subj-weeks">Weeks 1–12 · 3×/week</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:70%"></div></div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Report writing = backtest reports. Analysis = market commentary. Both skills compound.</p>
+    </div>
+  </div>
+
+  <div class="daily-routine">
+    <div class="dr-header">// Daily Routine — Phase 1 · Mon–Sat · 9hrs active</div>
+    <div class="dr-row">
+      <div class="dr-time">06:00–07:00</div>
+      <div class="dr-task">Morning market review — read EUR/USD overnight moves, check economic calendar, write 3-sentence summary in trading journal (English practice)</div>
+      <div class="dr-type project">PROJECT</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">07:00–09:00</div>
+      <div class="dr-task">Additional Mathematics (0606) — 2 hours on current topic. One past paper question solved from scratch. One topic mapped to trading project with AI (Claude Socratic prompt)</div>
+      <div class="dr-type igcse">IGCSE</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">09:00–11:00</div>
+      <div class="dr-task">Core Mathematics (0580) — 2 hours. Focus on statistics, probability, sequences. Every worked example uses price data, not abstract numbers</div>
+      <div class="dr-type igcse">IGCSE</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">11:00–13:00</div>
+      <div class="dr-task">Project work — Python coding on current ladder project. CS (0478) pseudocode written before any code. Dad reviews code at end of session</div>
+      <div class="dr-type project">PROJECT + CS</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">13:00–14:00</div>
+      <div class="dr-task">Lunch + break. No screens. Walk outside. The brain consolidates during rest, not during study</div>
+      <div class="dr-type rest">RECOVERY</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">14:00–15:30</div>
+      <div class="dr-task">Physics (0625) — 90 minutes alternating topics. Every concept mapped to market analogy. Waves/oscillations week = ARIMA forecasting preview</div>
+      <div class="dr-type igcse">IGCSE</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">15:30–17:00</div>
+      <div class="dr-task">English Language (0500) — 90 minutes. Report writing, comprehension, directed writing. Topics taken from forex news, not textbook extracts</div>
+      <div class="dr-type igcse">IGCSE</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">17:00–18:00</div>
+      <div class="dr-task">Project continuation or Maths Mastery past papers. Weekly Socratic viva with Claude — explain today's hardest concept back without notes</div>
+      <div class="dr-type project">REVIEW</div>
+    </div>
+    <div class="dr-row">
+      <div class="dr-time">21:00–22:00</div>
+      <div class="dr-task">End-of-day journal entry — what was built, what was learned, what was still confusing. One push to GitHub if project code was written. Sunday is full rest</div>
+      <div class="dr-type rest">LOG + COMMIT</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- PROJECTS -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" id="projects">
+<div class="wrap"><section>
+  <div class="s-tag">Year 1 Ladder Projects · Compressed to 6 Months</div>
+  <div class="s-title">Five projects.<br><span class="amber">One system.</span></div>
+  <p class="s-body">Each project is a self-contained piece of the MVP. They are not exercises. They are the components of a live trading system assembled piece by piece. By Project 5, all five connect into one deployable MVP.</p>
+
+  <div class="projects-grid">
+    <div class="proj-card">
+      <div class="proj-head">
+        <span class="proj-num">P 01</span>
+        <span class="proj-title">Forex Price Visualizer</span>
+      </div>
+      <div class="proj-week">Weeks 1–2 · Phase 1 (alongside IGCSE)</div>
+      <p class="proj-desc">Download EUR/USD and GBP/USD historical OHLCV data via yfinance API. Build candlestick charts with mplfinance. Add volume bars. Calculate and overlay 20-day and 50-day SMAs. Deploy as a local dashboard that auto-updates daily.</p>
+      <div class="proj-igcse">0580 coordinate geometry + statistics · 0478 file handling + arrays · 0625 data handling</div>
+      <div class="proj-tags">
+        <span class="proj-tag">Python</span><span class="proj-tag">pandas</span>
+        <span class="proj-tag">mplfinance</span><span class="proj-tag">yfinance</span>
+        <span class="proj-tag">matplotlib</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-head">
+        <span class="proj-num">P 02</span>
+        <span class="proj-title">Moving Average Calculator</span>
+      </div>
+      <div class="proj-week">Weeks 3–4 · Phase 1 (alongside IGCSE)</div>
+      <p class="proj-desc">Code SMA and EMA from scratch using pure NumPy — no library shortcuts. Generate crossover signals (EMA fast crosses above EMA slow = buy signal). Write signal output to CSV. This is the first component of the MVP signal engine.</p>
+      <div class="proj-igcse">0606 exponential functions + sequences · 0580 algebra · 0478 algorithms + pseudocode</div>
+      <div class="proj-tags">
+        <span class="proj-tag">Python</span><span class="proj-tag">NumPy</span>
+        <span class="proj-tag">SMA/EMA</span><span class="proj-tag">Signal generation</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-head">
+        <span class="proj-num">P 03</span>
+        <span class="proj-title">Currency Correlation Heatmap</span>
+      </div>
+      <div class="proj-week">Weeks 13–15 · Phase 2 (full-time)</div>
+      <p class="proj-desc">Calculate Pearson correlation matrix across 8 major pairs using 2 years of daily returns. Build interactive heatmap with seaborn. Identify which pairs move together — critical for avoiding over-correlated positions in the live portfolio.</p>
+      <div class="proj-igcse">0606 matrices · 0580 statistics + correlation coefficient · 0478 2D arrays</div>
+      <div class="proj-tags">
+        <span class="proj-tag">Python</span><span class="proj-tag">pandas</span>
+        <span class="proj-tag">seaborn</span><span class="proj-tag">Pearson correlation</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-head">
+        <span class="proj-num">P 04</span>
+        <span class="proj-title">Trading Journal App</span>
+      </div>
+      <div class="proj-week">Weeks 15–17 · Phase 2 (full-time)</div>
+      <p class="proj-desc">Build a SQLite-backed trading journal that automatically logs every trade — entry, exit, size, P&L, reason code. Computes live stats: win rate, average R:R, maximum drawdown, consecutive losses. This becomes the live dashboard when trading goes live.</p>
+      <div class="proj-igcse">0580 percentages + statistics · 0478 databases + file handling · 0500 report writing</div>
+      <div class="proj-tags">
+        <span class="proj-tag">Python</span><span class="proj-tag">SQLite</span>
+        <span class="proj-tag">Risk metrics</span><span class="proj-tag">Dashboard</span>
+      </div>
+    </div>
+
+    <div class="proj-card" style="grid-column:1/-1;border-color:var(--border2)">
+      <div class="proj-head">
+        <span class="proj-num" style="background:rgba(39,200,122,0.1);color:var(--green);border-color:rgba(39,200,122,0.25)">P 05</span>
+        <span class="proj-title">News Sentiment Scraper</span>
+      </div>
+      <div class="proj-week">Weeks 17–20 · Phase 2 (full-time) · FINAL COMPONENT</div>
+      <p class="proj-desc">Scrape forex news headlines from Investing.com, FXStreet, and Reuters using BeautifulSoup. Score each headline positive/negative/neutral using a pre-trained VADER sentiment model. Generate a daily sentiment score per currency. Feed the sentiment score as an additional filter on P02 crossover signals — only trade when price signal AND sentiment agree. This is the system's intelligence layer.</p>
+      <div class="proj-igcse">0478 networks + HTTP · 0500 comprehension + writer's effect · 0580 probability</div>
+      <div class="proj-tags">
+        <span class="proj-tag">Python</span><span class="proj-tag">BeautifulSoup</span>
+        <span class="proj-tag">VADER NLP</span><span class="proj-tag">Sentiment analysis</span>
+        <span class="proj-tag">Signal filter</span><span class="proj-tag">RSS feeds</span>
+      </div>
+    </div>
+  </div>
+</section></div>
+</div>
+
+<!-- MVP -->
+<section id="mvp">
+<div class="wrap">
+  <div class="s-tag">Minimum Viable Portfolio · The System</div>
+  <div class="s-title">What the MVP<br>actually <span class="green">looks like.</span></div>
+
+  <div class="mvp-hero">
+    <div class="mvp-title">Five projects.<br>One <span class="green">connected system.</span></div>
+    <p class="mvp-body">The MVP is not any individual project. It is all five projects connected into a single pipeline that runs automatically every day. At 6am, it downloads fresh data. At 6:05am, it calculates signals. At 6:10am, it checks sentiment. At 6:15am, it either flags a trade or waits. At end of day, it logs everything. You check the dashboard once. You make one decision. The system does the rest.</p>
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="tb-dot" style="background:#E8402A"></div>
+      <div class="tb-dot" style="background:#F5A623"></div>
+      <div class="tb-dot" style="background:#27C87A"></div>
+      <span style="font-family:var(--mono);font-size:10px;color:#555;margin-left:8px">tradanet_mvp.py — live system output</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-comment"># TRADANET MVP — Daily Pipeline · 06:00 UTC</span></div>
+      <div style="margin-top:8px"><span class="t-prompt">$ </span><span class="t-cmd">python tradanet_mvp.py --run-daily</span></div>
+      <div style="margin-top:8px"><span class="t-out">[06:00:12] Fetching OHLCV data for 6 pairs...</span></div>
+      <div><span class="t-out">[06:00:18] EUR/USD: </span><span class="t-num">847 candles</span><span class="t-out"> loaded · Last close: </span><span class="t-num">1.0842</span></div>
+      <div><span class="t-out">[06:00:19] GBP/USD: </span><span class="t-num">847 candles</span><span class="t-out"> loaded · Last close: </span><span class="t-num">1.2651</span></div>
+      <div style="margin-top:8px"><span class="t-out">[06:00:21] Calculating EMA signals (9/21 crossover)...</span></div>
+      <div><span class="t-out">[06:00:22] EUR/USD: EMA9=</span><span class="t-num">1.0836</span><span class="t-out"> EMA21=</span><span class="t-num">1.0819</span><span class="t-out"> → Signal: </span><span class="t-cmd">LONG</span></div>
+      <div><span class="t-out">[06:00:22] GBP/USD: EMA9=</span><span class="t-num">1.2648</span><span class="t-out"> EMA21=</span><span class="t-num">1.2671</span><span class="t-out"> → Signal: </span><span class="t-err">SHORT</span></div>
+      <div style="margin-top:8px"><span class="t-out">[06:00:24] Running sentiment analysis on 23 headlines...</span></div>
+      <div><span class="t-out">[06:00:27] EUR/USD sentiment: </span><span class="t-cmd">+0.34</span><span class="t-out"> (POSITIVE · 14 bull / 5 bear / 4 neutral)</span></div>
+      <div><span class="t-out">[06:00:27] GBP/USD sentiment: </span><span class="t-err">-0.18</span><span class="t-out"> (NEGATIVE · 6 bull / 11 bear / 6 neutral)</span></div>
+      <div style="margin-top:8px"><span class="t-out">[06:00:28] Checking correlation filter (EUR/USD x GBP/USD = 0.87)...</span></div>
+      <div><span class="t-warn">[06:00:28] WARNING: High correlation between active signals. Taking only highest-conviction trade.</span></div>
+      <div style="margin-top:8px"><span class="t-out">[06:00:29] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span></div>
+      <div><span class="t-cmd">[06:00:29] TRADE ALERT: EUR/USD LONG</span></div>
+      <div><span class="t-out">[06:00:29] Entry zone: </span><span class="t-num">1.0835–1.0845</span></div>
+      <div><span class="t-out">[06:00:29] Stop loss:  </span><span class="t-num">1.0798</span><span class="t-out"> (37 pips · 1.0% account risk)</span></div>
+      <div><span class="t-out">[06:00:29] Take profit: </span><span class="t-num">1.0956</span><span class="t-out"> (111 pips · 3.0R target)</span></div>
+      <div><span class="t-out">[06:00:29] Position size: </span><span class="t-num">0.02 lots</span><span class="t-out"> ($200 notional at $1,000 account)</span></div>
+      <div><span class="t-out">[06:00:29] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span></div>
+      <div style="margin-top:8px"><span class="t-out">[06:00:30] Journal entry logged · Dashboard updated · Slack alert sent</span></div>
+      <div><span class="t-out">[06:00:30] Next run: 06:00 UTC tomorrow</span></div>
+    </div>
+  </div>
+
+  <div class="mvp-stack-grid">
+    <div class="stack-card">
+      <div class="stack-layer">// Layer 1 · Data</div>
+      <div class="stack-name">Price + Sentiment Feed</div>
+      <p class="stack-body">yfinance pulls daily OHLCV for 6 pairs every morning. BeautifulSoup scrapes 3 news sources. VADER scores every headline. Both data streams are stored locally as CSV and SQLite.</p>
+      <div class="stack-tech">yfinance · BeautifulSoup · VADER · SQLite</div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-layer">// Layer 2 · Signal</div>
+      <div class="stack-name">EMA Crossover + Filter</div>
+      <p class="stack-body">EMA 9/21 crossover generates raw signal. Correlation check prevents trading two highly correlated pairs simultaneously. Sentiment filter confirms direction before alerting. Only high-confluence setups pass.</p>
+      <div class="stack-tech">NumPy · pandas · Correlation matrix</div>
+    </div>
+    <div class="stack-card">
+      <div class="stack-layer">// Layer 3 · Execution</div>
+      <div class="stack-name">Risk Engine + Journal</div>
+      <p class="stack-body">Position size calculated automatically from account balance and 1% risk rule. Stop loss placed at ATR-based support/resistance. All trades logged to SQLite with P&L, reason code, and screenshot of chart at entry.</p>
+      <div class="stack-tech">OANDA API · SQLite · Streamlit dashboard</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- EARNINGS -->
+<div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)" id="earnings">
+<div class="wrap"><section>
+  <div class="s-tag">Earnings Projections · $30,000 Capital Injection · 1 Jan 2027</div>
+  <div class="s-title">What the MVP earns<br>with <span class="green">serious capital.</span></div>
+  <p class="s-body">A $30,000 capital injection on 1 January 2027 — after MVP development is complete and one month of live trading has validated the system — changes the earnings picture fundamentally. The same 5–10% monthly edge that earns $50–$200 on a $1,000 account earns $1,500–$3,000 on a $30,000 account. The strategy does not change. The capital does.</p>
+
+  <!-- CAPITAL INJECTION BANNER -->
+  <div style="background:rgba(39,200,122,0.06);border:1px solid rgba(39,200,122,0.25);border-radius:8px;padding:24px 28px;margin-bottom:28px;display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+    <div style="flex-shrink:0">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">// Capital Event</div>
+      <div style="font-family:var(--mono);font-size:36px;font-weight:700;color:var(--green);line-height:1">$30,000</div>
+      <div style="font-family:var(--mono);font-size:11px;color:rgba(39,200,122,0.6);margin-top:4px">Injected 1 Jan 2027</div>
+    </div>
+    <div style="width:1px;height:60px;background:rgba(39,200,122,0.2);flex-shrink:0"></div>
+    <div style="flex:1;min-width:220px">
+      <div style="font-size:13px;color:rgba(240,240,242,0.55);line-height:1.75">Deployment condition: MVP live for minimum 30 days with positive P&L and all risk rules observed without exception. Dad signs off on system audit before capital is transferred to broker. Capital is deployed incrementally — $10,000 in January, $10,000 in February if Jan profitable, final $10,000 in March.</div>
+    </div>
+    <div style="flex-shrink:0;text-align:right">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:4px">Gate condition</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--green)">Dec 2026 live ✓</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--green)">Dad audit ✓</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--green)">Incremental deploy ✓</div>
+    </div>
+  </div>
+
+  <!-- SCENARIO CARDS — REBASED TO $30K -->
+  <div class="earnings-grid">
+    <div class="earn-card bear">
+      <div class="earn-scenario">Bear · 30% prob</div>
+      <div class="earn-month">$300–$900</div>
+      <div class="earn-annual" style="color:rgba(232,64,42,0.5)">$3,600–$10,800 / yr</div>
+      <p class="earn-prob">1–3% monthly on $30K. Strategy underperforms or market conditions are difficult. Still significantly above break-even. Risk rules prevent capital destruction.</p>
+    </div>
+    <div class="earn-card base">
+      <div class="earn-scenario">Base · 45% prob</div>
+      <div class="earn-month">$1,500–$3,000</div>
+      <div class="earn-annual" style="color:rgba(245,166,35,0.5)">$18,000–$36,000 / yr</div>
+      <p class="earn-prob">5–10% monthly on $30K. Consistent execution of the MVP system. Win rate 48–54%. 4–8 trades per month. This is a realistic, documented range for systematic daily-chart forex strategies.</p>
+    </div>
+    <div class="earn-card bull">
+      <div class="earn-scenario">Bull · 20% prob</div>
+      <div class="earn-month">$3,000–$6,000</div>
+      <div class="earn-annual" style="color:rgba(39,200,122,0.5)">$36,000–$72,000 / yr</div>
+      <p class="earn-prob">10–20% monthly on $30K. Strong trend months where EMA + sentiment align consistently. Possible. Not the planning assumption. If achieved, withdraw 30% and rebase.</p>
+    </div>
+    <div class="earn-card stretch">
+      <div class="earn-scenario">Stretch · 5% prob</div>
+      <div class="earn-month">$6,000–$12,000</div>
+      <div class="earn-annual" style="color:rgba(126,184,240,0.5)">$72,000–$144,000 / yr</div>
+      <p class="earn-prob">20–40% monthly. Exceptional performance with system improvements from Year 2 ML projects. Do not plan for this. Do not chase this. If it happens, withdraw 50% immediately.</p>
+    </div>
+  </div>
+
+  <!-- COMPOUNDING GROWTH TABLE — FULL 18 MONTHS -->
+  <div style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin:28px 0 12px;display:flex;align-items:center;gap:12px"><span style="display:block;width:20px;height:1px;background:var(--amber)"></span>18-Month Compounding Projection · Base Case · 7% Monthly</div>
+  <div class="growth-table">
+    <div class="gt-header">
+      <div>Period</div>
+      <div>Phase / Activity</div>
+      <div>Capital</div>
+      <div>Monthly P&L</div>
+      <div>Cumulative</div>
+      <div>Notes</div>
+    </div>
+    <div class="gt-row">
+      <div class="gt-month">Jun–Aug<br>2026</div>
+      <div class="gt-phase">IGCSE + P01/P02</div>
+      <div class="gt-capital">$0</div>
+      <div class="gt-pnl zero">$0</div>
+      <div class="gt-cum">$0</div>
+      <div class="gt-note">Foundation phase. Paper trading from Week 3. No live capital.</div>
+    </div>
+    <div class="gt-row">
+      <div class="gt-month">Sep–Oct<br>2026</div>
+      <div class="gt-phase">Full-time · P03–P05</div>
+      <div class="gt-capital">$0</div>
+      <div class="gt-pnl zero">$0</div>
+      <div class="gt-cum">$0</div>
+      <div class="gt-note">MVP integration. Paper trading with full system. Dad code review.</div>
+    </div>
+    <div class="gt-row">
+      <div class="gt-month">Nov<br>2026</div>
+      <div class="gt-phase">MVP complete · paper trade</div>
+      <div class="gt-capital">$0</div>
+      <div class="gt-pnl zero">$0</div>
+      <div class="gt-cum">$0</div>
+      <div class="gt-note">4 weeks paper trading. Minimum 20 signals evaluated. System signed off.</div>
+    </div>
+    <div class="gt-row" style="background:var(--amber-dim)">
+      <div class="gt-month">Dec<br>2026</div>
+      <div class="gt-phase">LIVE DEBUT · proof of edge</div>
+      <div class="gt-capital">$500–$1K</div>
+      <div class="gt-pnl pos">$30–$100</div>
+      <div class="gt-cum">$30–$100</div>
+      <div class="gt-note">Mandatory gate month. Prove the system works live before $30K deployed.</div>
+    </div>
+    <div class="gt-row" style="background:rgba(39,200,122,0.05);border-left:2px solid var(--green)">
+      <div class="gt-month" style="color:var(--green)">Jan<br>2027 ★</div>
+      <div class="gt-phase" style="color:var(--green)">$10K deployed · tranche 1</div>
+      <div class="gt-capital" style="color:var(--text)">$10,000</div>
+      <div class="gt-pnl pos" style="font-size:14px">$500–$1,000</div>
+      <div class="gt-cum" style="color:var(--green)">$530–$1,100</div>
+      <div class="gt-note">First $10K tranche. 5–10% target. System unchanged from Dec proof month.</div>
+    </div>
+    <div class="gt-row" style="background:rgba(39,200,122,0.04)">
+      <div class="gt-month" style="color:var(--green)">Feb<br>2027</div>
+      <div class="gt-phase">$10K + profits · tranche 2</div>
+      <div class="gt-capital">$20,000</div>
+      <div class="gt-pnl pos" style="font-size:13px">$1,000–$2,000</div>
+      <div class="gt-cum" style="color:var(--green)">$1,530–$3,100</div>
+      <div class="gt-note">Second $10K tranche IF Jan profitable. Double position sizing.</div>
+    </div>
+    <div class="gt-row" style="background:rgba(39,200,122,0.03)">
+      <div class="gt-month" style="color:var(--green)">Mar<br>2027</div>
+      <div class="gt-phase">Full $30K · all tranches</div>
+      <div class="gt-capital" style="color:var(--text);font-weight:600">$30,000</div>
+      <div class="gt-pnl pos" style="font-size:14px;font-weight:600">$1,500–$3,000</div>
+      <div class="gt-cum" style="color:var(--green)">$3,030–$6,100</div>
+      <div class="gt-note">Full capital deployed. This is the monthly run-rate from here forward.</div>
+    </div>
+    <div class="gt-row">
+      <div class="gt-month">Apr<br>2027</div>
+      <div class="gt-phase">Compound · Year 2 ML begins</div>
+      <div class="gt-capital">~$32,100</div>
+      <div class="gt-pnl pos">$1,600–$3,200</div>
+      <div class="gt-cum" style="color:var(--green)">$4,630–$9,300</div>
+      <div class="gt-note">Profits compounding. Year 2 P06 (price direction ML model) in development.</div>
+    </div>
+    <div class="gt-row">
+      <div class="gt-month">May–Jun<br>2027</div>
+      <div class="gt-phase">Scale · Laney College prep</div>
+      <div class="gt-capital">~$34,400</div>
+      <div class="gt-pnl pos">$1,700–$3,400/mo</div>
+      <div class="gt-cum" style="color:var(--green)">$7,830–$15,500</div>
+      <div class="gt-note">System improving with ML signal overlay from Year 2 projects.</div>
+    </div>
+    <div class="gt-row" style="background:rgba(245,166,35,0.05)">
+      <div class="gt-month">Jul–Sep<br>2027</div>
+      <div class="gt-phase">Pre-Laney · full compounding</div>
+      <div class="gt-capital">~$38,000</div>
+      <div class="gt-pnl pos">$1,900–$3,800/mo</div>
+      <div class="gt-cum" style="color:var(--amber)">$13,500–$27,000</div>
+      <div class="gt-note">Laney College application in progress. Trading funds the SF relocation.</div>
+    </div>
+    <div class="gt-row" style="background:rgba(245,166,35,0.08)">
+      <div class="gt-month">Dec<br>2027</div>
+      <div class="gt-phase">12 months post-injection</div>
+      <div class="gt-capital">~$60,000–$67,000</div>
+      <div class="gt-pnl pos" style="font-size:14px;font-weight:600">$3,000–$6,700/mo</div>
+      <div class="gt-cum" style="color:var(--amber);font-size:14px;font-weight:600">$30K → $60–67K</div>
+      <div class="gt-note">$30K compounded at 7%/month for 12 months = $67,382. Base case projection.</div>
+    </div>
+  </div>
+
+  <!-- COMPOUNDING MATH BOX -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:20px 0 28px">
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:22px 20px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">// Bear Case · 3%/month</div>
+      <div style="font-family:var(--mono);font-size:11px;color:rgba(240,240,242,0.5);line-height:1.8">
+        Jan: $10K → $10,300<br>
+        Mar: $30K deployed<br>
+        Dec 2027: <span style="color:var(--red);font-size:14px;font-weight:600">~$39,200</span><br>
+        <span style="color:var(--muted);font-size:10px">+$9,200 on $30K · 31% annual</span>
+      </div>
+    </div>
+    <div style="background:rgba(39,200,122,0.04);border:1px solid rgba(39,200,122,0.2);border-radius:8px;padding:22px 20px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">// Base Case · 7%/month ★</div>
+      <div style="font-family:var(--mono);font-size:11px;color:rgba(240,240,242,0.5);line-height:1.8">
+        Jan: $10K → $10,700<br>
+        Mar: $30K deployed<br>
+        Dec 2027: <span style="color:var(--green);font-size:14px;font-weight:600">~$67,400</span><br>
+        <span style="color:rgba(39,200,122,0.6);font-size:10px">+$37,400 on $30K · 125% annual</span>
+      </div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:22px 20px">
+      <div style="font-family:var(--mono);font-size:9px;color:#7EB8F0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">// Bull Case · 15%/month</div>
+      <div style="font-family:var(--mono);font-size:11px;color:rgba(240,240,242,0.5);line-height:1.8">
+        Jan: $10K → $11,500<br>
+        Mar: $30K deployed<br>
+        Dec 2027: <span style="color:#7EB8F0;font-size:14px;font-weight:600">~$174,000</span><br>
+        <span style="color:rgba(126,184,240,0.6);font-size:10px">+$144K on $30K · 480% annual</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT $30K MEANS PRACTICALLY -->
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:28px">
+    <div style="padding:14px 20px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);border-bottom:1px solid var(--border);background:var(--amber-dim)">// What $30,000 actually means for this family</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)">
+      <div style="background:var(--bg3);padding:22px 24px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);margin-bottom:8px">POSITION SIZING</div>
+        <div style="font-size:13px;color:rgba(240,240,242,0.6);line-height:1.7">At 1% risk per trade, $30,000 means <span style="color:var(--text);font-family:var(--mono)">$300 maximum loss per trade</span> versus $10 on a $1,000 account. Same percentage. 30× the dollar impact. Position sizes scale proportionally — 0.6 standard lots per trade versus 0.02 lots. The mathematics are identical. The numbers are not.</div>
+      </div>
+      <div style="background:var(--bg3);padding:22px 24px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);margin-bottom:8px">SAN FRANCISCO FUNDING</div>
+        <div style="font-size:13px;color:rgba(240,240,242,0.6);line-height:1.7">The base case projection of <span style="color:var(--green);font-family:var(--mono)">$1,500–$3,000/month</span> from March 2027 is meaningful income in Harare. By September 2027 — Laney College start — cumulative profits of $13,500–$27,000 contribute directly to the family's San Francisco relocation and living costs. The trading system funds the journey to Silicon Valley.</div>
+      </div>
+      <div style="background:var(--bg3);padding:22px 24px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);margin-bottom:8px">RISK MANAGEMENT SCALING</div>
+        <div style="font-size:13px;color:rgba(240,240,242,0.6);line-height:1.7">The 5% daily drawdown pause rule means <span style="color:var(--red);font-family:var(--mono)">maximum $1,500 loss in a single day</span> before the system halts. This is enforced by code. The 1% rule means losing 20 consecutive trades — a near-impossible streak — to lose 18% of capital. Risk rules do not change with capital size. They become more important.</div>
+      </div>
+      <div style="background:var(--bg3);padding:22px 24px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--amber);margin-bottom:8px">THE INCREMENTAL GATE</div>
+        <div style="font-size:13px;color:rgba(240,240,242,0.6);line-height:1.7"><span style="color:var(--text);font-family:var(--mono)">$10K Jan → $10K Feb → $10K Mar</span> is not arbitrary caution. It is the correct engineering approach to scaling a live system. Each tranche is a hypothesis test: does the system perform at 2× the previous capital? If yes, deploy the next. If not, diagnose first. Capital is not deployed on faith. It is deployed on data.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P&L TABLE — REBASED -->
+  <div class="pnl-section">
+    <div class="pnl-header">
+      <div>MVP Component</div>
+      <div>What it adds</div>
+      <div>Capital</div>
+      <div>Monthly est.</div>
+      <div>Risk level</div>
+    </div>
+    <div class="pnl-row">
+      <div class="pnl-mvp">P01+P02 only<br>(EMA signals)</div>
+      <div class="pnl-desc">Basic trend following. EMA crossover on EUR/USD only. No filters. Minimum deployable version. Proof of concept before $30K injection.</div>
+      <div class="pnl-capital">$500–$1K<br><span style="font-size:10px;color:var(--dim)">Dec 2026</span></div>
+      <div class="pnl-monthly">$30–$100</div>
+      <div class="pnl-risk"><span class="risk-hi">HIGH</span></div>
+    </div>
+    <div class="pnl-row">
+      <div class="pnl-mvp">Full MVP<br>P01–P05 ✓</div>
+      <div class="pnl-desc">Sentiment filter, correlation check, automated journal. False signals reduced 30–40%. System validated on $500–$1K before $30K deployed.</div>
+      <div class="pnl-capital">$10K tranche 1<br><span style="font-size:10px;color:var(--dim)">Jan 2027</span></div>
+      <div class="pnl-monthly">$500–$1,000</div>
+      <div class="pnl-risk"><span class="risk-med">MEDIUM</span></div>
+    </div>
+    <div class="pnl-row">
+      <div class="pnl-mvp">MVP + $20K<br>tranche 2</div>
+      <div class="pnl-desc">Second tranche deployed after Jan profitable. Position sizes double. Same system, proven at $10K, now tested at $20K. Monitoring for slippage at larger sizes.</div>
+      <div class="pnl-capital">$20K<br><span style="font-size:10px;color:var(--dim)">Feb 2027</span></div>
+      <div class="pnl-monthly">$1,000–$2,000</div>
+      <div class="pnl-risk"><span class="risk-med">MEDIUM</span></div>
+    </div>
+    <div class="pnl-row" style="background:rgba(39,200,122,0.03)">
+      <div class="pnl-mvp">MVP + ML overlay<br>Full $30K ✓</div>
+      <div class="pnl-desc">Full $30K deployed. Year 2 Project 6 (ML price direction model) begins filtering signals further. System matures. Edge compounds with capital and intelligence simultaneously.</div>
+      <div class="pnl-capital">$30K full<br><span style="font-size:10px;color:var(--green)">Mar 2027</span></div>
+      <div class="pnl-monthly" style="font-size:14px">$1,500–$3,000</div>
+      <div class="pnl-risk"><span class="risk-low">LOW-MED ✓</span></div>
+    </div>
+    <div class="pnl-total" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr">
+      <div class="pnl-total-label">Full MVP · $30,000 · Mar 2027</div>
+      <div></div>
+      <div></div>
+      <div class="pnl-total-monthly">$1,500–$3,000/mo</div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted)">5–10% monthly · $18K–$36K annual</div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    These projections are estimates only. A $30,000 capital injection assumes the MVP system has been validated through at least 30 days of profitable live trading at smaller capital before deployment. Capital must be deployed in three tranches — $10K January, $10K February (conditional on Jan profitability), $10K March (conditional on Feb profitability). Forex trading involves significant risk of loss including potential loss of the entire $30,000. The base case 7% monthly return is achievable but not guaranteed. Bear case (3% monthly) and capital preservation must both be considered acceptable outcomes before this capital is committed. All system changes require Dad's approval. Maximum daily loss of $1,500 (5% of $30K) triggers system halt and mandatory review.
+  </div>
+
+</section></div>
+</div>
+
+<!-- RISK RULES -->
+<section id="rules">
+<div class="wrap">
+  <div class="s-tag">Non-Negotiable Risk Rules</div>
+  <div class="s-title">The rules that<br>protect the <span class="green">capital.</span></div>
+  <p class="s-body">Every rule below is enforced in code — not willpower. The system refuses to place a trade that violates these rules. This is not discipline. This is engineering.</p>
+
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="rule-num">// Rule 01</div>
+      <div class="rule-title">Maximum 1% risk per trade</div>
+      <p class="rule-body">Never risk more than 1% of account balance on a single trade. On a $1,000 account that is $10 maximum loss per trade. Position size is calculated automatically from stop distance and account balance. The system refuses to place a trade that risks more.</p>
+      <div class="rule-formula">position_size = (account * 0.01) / (entry - stop_loss)</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">// Rule 02</div>
+      <div class="rule-title">Maximum 5% daily drawdown → system pauses</div>
+      <p class="rule-body">If the account drops 5% in a single day, the system sends an alert, logs the event, and stops placing new trades until manually restarted. This prevents the most dangerous trading behaviour — doubling down after losses.</p>
+      <div class="rule-formula">if daily_drawdown >= 0.05: system.pause() · notify(dad)</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">// Rule 03</div>
+      <div class="rule-title">Minimum 2:1 reward-to-risk ratio</div>
+      <p class="rule-body">Every trade must have a take profit at least twice the distance of the stop loss. A 30-pip stop requires a 60-pip target minimum. This means the strategy is profitable at a win rate as low as 34%. Below this ratio, the trade is not taken regardless of signal strength.</p>
+      <div class="rule-formula">trade_valid = (take_profit - entry) / (entry - stop_loss) >= 2.0</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">// Rule 04</div>
+      <div class="rule-title">Maximum 3 open trades simultaneously</div>
+      <p class="rule-body">Never more than 3 positions open at once. Correlation check ensures no two highly correlated pairs trade simultaneously in the same direction. This prevents the illusion of diversification while actually holding the same risk twice.</p>
+      <div class="rule-formula">if len(open_positions) >= 3: signal.ignore()</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">// Rule 05</div>
+      <div class="rule-title">No trading during high-impact news events</div>
+      <p class="rule-body">The system checks the economic calendar before placing a trade. If a high-impact news event (NFP, Fed rate decision, ECB press conference) is within 2 hours, no new positions are opened. News events invalidate technical signals.</p>
+      <div class="rule-formula">if hours_to_news_event(impact='HIGH') < 2: signal.ignore()</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-num">// Rule 06</div>
+      <div class="rule-title">Weekly review with Dad as risk officer</div>
+      <p class="rule-body">Every Sunday: review the week's trades with Dad. Log what worked, what did not, and why. Any system changes require Dad's approval before going live. The 30-year software engineer is the second pair of eyes that prevents both bugs and behavioural errors.</p>
+      <div class="rule-formula">weekly_review = mandatory · system_changes = dad_approved_only</div>
+    </div>
+  </div>
+
+  <!-- CLOSING -->
+  <div style="margin-top:40px" class="closing">
+    <div class="closing-title">The MVP is not the destination.<br>It is proof the destination exists.</div>
+    <p class="closing-body">Every professional quantitative trader started somewhere that looked exactly like this — a simple systematic strategy, strict rules, and the discipline to follow the system when emotion said otherwise. The $30,000 capital injection on 1 January 2027 is not a gift. It is a contract. The system must earn it by proving a live edge in December 2026 first. If it does, that capital compounds at 7% monthly to $67,400 by December 2027 — enough to fund the San Francisco relocation, Laney College fees, and the first year of the Berkeley plan simultaneously. The trading system does not just earn money. It funds the entire journey.</p>
+    <a href="https://tradanet.github.io/forex/" class="closing-link" target="_blank">↗ Full IGCSE · AI Ladder · tradanet.github.io/forex</a>
+  </div>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-l">TRADANET // SIX MONTH WAR ROOM // Jun 2026 → Dec 2026</div>
+  <div class="footer-r">Harare → San Francisco · 2026–2029</div>
+</footer>
+
+<script>
+// Nav active state
+const sections = document.querySelectorAll('[id]');
+const btns = document.querySelectorAll('.nav-btn');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if(window.scrollY >= s.offsetTop - 120) current = s.id; });
+  btns.forEach(b => {
+    b.classList.remove('active');
+    if(b.getAttribute('href') === '#' + current) b.classList.add('active');
+  });
+}, {passive:true});
+</script>
+</body>
+</html>
